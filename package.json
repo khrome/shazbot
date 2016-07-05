@@ -1,0 +1,35 @@
+{
+    "name": "shazbot",
+    "homepage": "https://github.com/khrome/shazbot",
+    "version": "0.0.1",
+    "main": "amazon.js",
+    "description": "You'd think one of the hundred amazon wrappers would have worked for me... but they didn't, so I wrote this",
+    "keywords": [
+        "amazon",
+        "product",
+        "api"
+    ],
+    "author": "Abbey Hawk Sparrow <@khrome> (http://patternweaver.com)",
+    "contributors": [],
+    "bugs": {
+        "url": "https://github.com/khrome/shazbot/issues"
+    },
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/khrome/shazbot.git"
+    },
+    "dependencies": {
+        "xml2js": "*",
+        "request": "*",
+        "crypto": "*"
+    },
+    "devDependencies": {
+        "mocha": "*",
+        "should": "*"
+    },
+    "optionalDependencies": {},
+    "engines": {
+        "node": "*"
+    }
+}
