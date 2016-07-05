@@ -2,13 +2,13 @@ var request = require('request');
 var crypto = require('crypto');
 var parseXML = require('xml2js').parseString;
 
-function JSStringFromCamelString(string){
+function JSStringFromCamelString(string, delimiter){
     var copy = '';
     var lastCharWasUpper = false;
     for(var lcv = 0; lcv < string.length; lcv++){
         if(string[lcv].toLowerCase() !== string[lcv]){
             if(lcv == 0 || lastCharWasUpper) copy += string[lcv].toLowerCase();
-            else copy += '-'+string[lcv].toLowerCase();
+            else copy += (delimiter || '-')+string[lcv].toLowerCase();
             lastCharWasUpper = true;
         }else{
             lastCharWasUpper = false;
@@ -18,11 +18,11 @@ function JSStringFromCamelString(string){
     return copy;
 }
 
-function JSParamsFromCamel(object){
+function JSParamsFromCamel(object, delimiter){
     if(typeof object == 'object' && !Array.isArray(object)){
         var cloned = {};
         Object.keys(object).forEach(function(key){
-            cloned[JSStringFromCamelString(key)] = JSParamsFromCamel(object[key]);
+            cloned[JSStringFromCamelString(key, delimiter)] = JSParamsFromCamel(object[key]);
         });
         return cloned;
     }
@@ -36,7 +36,7 @@ function JSParamsFromCamel(object){
 
 function AmazonProductAPI(creds){
     this.creds = creds;
-    this.delimiter = '_';
+    this.delimiter = '-';
 }
 
 function CamelParamsFromJS(options){
@@ -60,7 +60,6 @@ function alias(functionName, operationName, handler){
 
 alias('lookup', 'ItemLookup', function(results){
     var result = {};
-    console.log(JSON.stringify(results, undefined, '    '));
     var attrs = results.item[0]['item-attributes'][0];
     if(attrs.author) result.author = attrs.author.join(",");
     if(attrs.director) result.director = attrs.director.join(",");
@@ -128,8 +127,9 @@ AmazonProductAPI.prototype.operate = function(name, options, callback){
           parseXML(body, function (err, resp) {
               if(err) return callback(err);
               var found;
-              var dashed = JSParamsFromCamel(resp);
-              var response = dashed[JSStringFromCamelString(name)+ob.delimiter+'response'].items[0];
+              var dashed = JSParamsFromCamel(resp, ob.delimiter);
+              var respName = JSStringFromCamelString(name, ob.delimiter)+ob.delimiter+'response';
+              var response = dashed[respName].items[0];
               if(response.errors) return callback(response.errors);
               return callback(undefined, response);
           });
